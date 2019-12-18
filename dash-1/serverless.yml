@@ -1,0 +1,36 @@
+service: dashboard-1
+# app and org for use with dashboard.serverless.com
+app: dashboard-test
+org: garysjennings
+
+provider:
+    name: aws
+    runtime: nodejs12.x
+
+custom:
+    base: ${self:service}-${self:provider.stage}
+
+functions:
+    test:
+        name: ${self:custom.base}-dash1
+        handler: handler.hello
+        description: Returns event to test API deployment
+        events:
+            - http:
+                  path: /dash1
+                  method: ANY
+                  cors: true
+
+outputs:
+    ApiEndpoint:
+        Fn::Join:
+            - ''
+            - - https://
+              - Ref: ApiGatewayRestApi
+              - .execute-api.${self:provider.region}.amazonaws.com/${self:provider.stage}/dash1
+    ApiId:
+        Ref: ApiGatewayRestApi
+    ApiResourceId:
+        Fn::GetAtt:
+            - ApiGatewayRestApi
+            - RootResourceId

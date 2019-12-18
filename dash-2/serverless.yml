@@ -1,0 +1,25 @@
+service: dashboard-2
+# app and org for use with dashboard.serverless.com
+app: dashboard-test
+org: garysjennings
+
+provider:
+    name: aws
+    runtime: nodejs12.x
+
+custom:
+    base: ${self:service}-${self:provider.stage}
+
+functions:
+    test:
+        name: ${self:custom.base}-dash2
+        handler: handler.hello
+        description: Returns event to test API deployment
+        environment:
+            MY_URL: ${output:dashboard-1.ApiEndpoint}
+            MY_SECRET: ${param:SECRET}
+        events:
+            - http:
+                  path: /dash2
+                  method: ANY
+                  cors: true
